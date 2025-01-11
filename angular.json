@@ -90,12 +90,16 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "~primeflex/primeflex.css"
             ],
             "scripts": []
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "46787c65-86ad-4cb5-92b5-b6e20e0c402a"
   }
 }

@@ -1,0 +1,50 @@
+<div class="px-5">
+  <div class="p-fluid flex justify-content-between">
+    <h1>
+      <i class="pi pi-building" style="font-size: 1.5rem"></i>
+      Restaurants
+    </h1>
+    <div class="flex align-items-center">
+      <p-button>
+        <i class="pi pi-plus mx-2"></i>
+
+        Add Restaurant
+      </p-button>
+    </div>
+  </div>
+  <p-card class="p-grid">
+    @for (restaurant of restaurants; track restaurant.id) {
+      <div class="p-col-12">
+        <p-card
+          [header]="restaurant.name"
+          [style]="{ width: '360px' }">
+          <ng-template pTemplate="header">
+            <img alt="Card" src="https://primefaces.org/cdn/primeng/images/card-ng.jpg"/>
+          </ng-template>
+
+          <ng-template pTemplate="subheader">
+            <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
+            <br>
+            <br>
+            <span>
+              {{ restaurant.totalReviews }} Reviews
+            </span>
+          </ng-template>
+
+          <ng-template pTemplate="footer">
+            <div
+              class="flex justify-content-between mt-1">
+              <p-button label="Rate Restaurant" severity="secondary"/>
+              <p-button>
+                <a [routerLink]="['/restaurant', restaurant.id]"
+                   class="p-button font-bold">
+                  Check it out!
+                </a>
+              </p-button>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+    }
+  </p-card>
+</div>
