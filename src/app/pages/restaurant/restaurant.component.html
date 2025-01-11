@@ -7,7 +7,6 @@
     <div class="flex align-items-center">
       <p-button>
         <i class="pi pi-plus mx-2"></i>
-
         Add Restaurant
       </p-button>
     </div>
@@ -23,23 +22,26 @@
           </ng-template>
 
           <ng-template pTemplate="subheader">
+            <div class="flex align-content-center gap-2">
             <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
-            <br>
-            <br>
+              <span class="text-primary">({{ restaurant.averageRating }})</span>
+            </div>
+            <div class="mt-2">
             <span>
               {{ restaurant.totalReviews }} Reviews
             </span>
+            </div>
           </ng-template>
 
           <ng-template pTemplate="footer">
             <div
               class="flex justify-content-between mt-1">
-              <p-button label="Rate Restaurant" severity="secondary"/>
-              <p-button>
-                <a [routerLink]="['/restaurant', restaurant.id]"
-                   class="p-button font-bold">
-                  Check it out!
-                </a>
+              <p-button
+                label="Rate Restaurant"
+                severity="secondary"/>
+              <p-button
+                label="Check it out!"
+                class="font-bold">
               </p-button>
             </div>
           </ng-template>
