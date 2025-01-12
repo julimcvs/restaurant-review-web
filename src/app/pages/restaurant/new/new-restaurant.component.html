@@ -1,0 +1,97 @@
+<div class="px-5">
+  <div class="flex align-items-center">
+    <p-button
+      [routerLink]="['/restaurants']"
+      outlined>
+      <i class="pi pi-arrow-left mx-2"></i>
+      Voltar
+    </p-button>
+  </div>
+  <div class="p-fluid flex justify-content-between">
+    <h1>
+      <i class="pi pi-plus font-bold" style="font-size: 1.5rem"></i>
+      New Restaurant
+    </h1>
+  </div>
+  <form
+    (ngSubmit)="saveRestaurant()"
+    [formGroup]="form">
+    <p-card
+      [style]="{'box-shadow': '0px 1px 8px rgba(0, 0, 0, 0.08), 0px 3px 4px rgba(0, 0, 0, 0.1), 0px 1px 4px -1px rgba(0, 0, 0, 0.1)'}">
+      <div class="grid p-3">
+        <p-floatLabel class="col-12 md:col-6">
+          <input class="w-full" formControlName="name" id="name" pInputText/>
+          <label for="name">Name: </label>
+        </p-floatLabel>
+
+        <p-autoComplete
+          [style]="{width: '100%'}"
+          optionValue="id"
+          optionLabel="name"
+          class="col-12 md:col-6"
+          formControlName="categoryId"
+          dropdown
+          placeholder="Category"
+          [suggestions]="filteredCategories"
+          (completeMethod)="filterCategory($event.query)"
+        />
+        <p-floatLabel class="col-12 mt-3">
+          <textarea
+            class="w-full"
+            cols="30"
+            formControlName="description"
+            id="description"
+            pInputTextarea rows="5"></textarea>
+          <label for="description">Description: </label>
+        </p-floatLabel>
+        <p-card
+          [style]="{'box-shadow': '0px 1px 8px rgba(0, 0, 0, 0.08), 0px 3px 4px rgba(0, 0, 0, 0.1), 0px 1px 4px -1px rgba(0, 0, 0, 0.1)'}"
+          class="w-full mt-3">
+          <p class="m-0">
+            Address:
+          </p>
+          <div formGroupName="address">
+            <div class="grid p-3 mt-3">
+              <p-floatLabel class="col-12 md:col-6 md:mt-3">
+                <p-inputMask [style]="{width: '100%'}" formControlName="zipCode" id="zip" mask="99999-999"/>
+                <label for="zip">Zip Code: </label>
+              </p-floatLabel>
+              <p-floatLabel class="col-12 md:col-6 md:mt-3">
+                <input class="w-full" formControlName="street" id="street" pInputText/>
+                <label for="street">Street: </label>
+              </p-floatLabel>
+              <p-floatLabel class="col-12 md:col-6 md:mt-3">
+                <input class="w-full" formControlName="number" id="number" pInputText/>
+                <label for="number">Number: </label>
+              </p-floatLabel>
+              <p-floatLabel class="col-12 md:col-6 md:mt-3">
+                <input class="w-full" formControlName="neighborhood" id="neighborhood" pInputText/>
+                <label for="neighborhood">Neighborhood: </label>
+              </p-floatLabel>
+              <p-floatLabel class="col-12 md:col-6 md:mt-3">
+                <input class="w-full" formControlName="state" id="state" pInputText/>
+                <label for="state">State: </label>
+              </p-floatLabel>
+              <p-floatLabel class="col-12 md:col-6 md:mt-3">
+                <input class="w-full" formControlName="country" id="country" pInputText/>
+                <label for="country">Country: </label>
+              </p-floatLabel>
+
+            </div>
+          </div>
+        </p-card>
+        <div class="mt-3 flex justify-content-end w-full">
+          <p-button
+            type="submit"
+            label="Save"
+            [loading]="loading"
+            icon="pi pi-check"
+            severity="success"
+            iconPos="right">
+          </p-button>
+        </div>
+      </div>
+
+    </p-card>
+  </form>
+</div>

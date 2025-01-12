@@ -5,16 +5,19 @@
       Restaurants
     </h1>
     <div class="flex align-items-center">
-      <p-button>
+      <p-button
+        [routerLink]="['/restaurants/new']">
         <i class="pi pi-plus mx-2"></i>
         Add Restaurant
       </p-button>
     </div>
   </div>
-  <p-card class="p-grid">
+  <p-card>
+    <div class="grid column-gap-3">
     @for (restaurant of restaurants; track restaurant.id) {
-      <div class="p-col-12">
+      <div>
         <p-card
+          class="col-12 md:col-3"
           [header]="restaurant.name"
           [style]="{ width: '360px' }">
           <ng-template pTemplate="header">
@@ -24,7 +27,7 @@
           <ng-template pTemplate="subheader">
             <div class="flex align-content-center gap-2">
             <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
-              <span class="text-primary">({{ restaurant.averageRating }})</span>
+              <span *ngIf="restaurant.totalReviews > 0" class="text-primary">({{ restaurant.averageRating }})</span>
             </div>
             <div class="mt-2">
             <span>
@@ -48,5 +51,6 @@
         </p-card>
       </div>
     }
+    </div>
   </p-card>
 </div>
