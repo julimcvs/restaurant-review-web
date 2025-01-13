@@ -8,6 +8,12 @@ export interface RestaurantePaginado {
   name: string;
   averageRating: number;
   totalReviews: number;
+  images: [
+    {
+      filename: string,
+      url: string
+    }
+  ];
 }
 
 @Component({

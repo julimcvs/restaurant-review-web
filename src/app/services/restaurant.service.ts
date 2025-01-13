@@ -45,7 +45,7 @@ export class RestaurantService {
     return this.apiService.post<Page<RestaurantePaginado>>(`${this.endpoint}/paginated`, filter, httpParams);
   }
 
-  save(input: Partial<SaveRestaurantDto>) {
+  save(input: FormData) {
     return this.apiService.post(`${this.endpoint}`, input);
   }
 }

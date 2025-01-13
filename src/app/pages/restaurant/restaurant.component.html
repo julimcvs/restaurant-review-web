@@ -14,43 +14,43 @@
   </div>
   <p-card>
     <div class="grid column-gap-3">
-    @for (restaurant of restaurants; track restaurant.id) {
-      <div>
-        <p-card
-          class="col-12 md:col-3"
-          [header]="restaurant.name"
-          [style]="{ width: '360px' }">
-          <ng-template pTemplate="header">
-            <img alt="Card" src="https://primefaces.org/cdn/primeng/images/card-ng.jpg"/>
-          </ng-template>
+      @for (restaurant of restaurants; track restaurant.id) {
+        <div>
+          <p-card
+            class="col-12 md:col-3"
+            [header]="restaurant.name"
+            [style]="{ width: '360px' }">
+            <ng-template pTemplate="header">
+              <img alt="Card" [src]="restaurant.images[0].url"/>
+            </ng-template>
 
-          <ng-template pTemplate="subheader">
-            <div class="flex align-content-center gap-2">
-            <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
-              <span *ngIf="restaurant.totalReviews > 0" class="text-primary">({{ restaurant.averageRating }})</span>
-            </div>
-            <div class="mt-2">
+            <ng-template pTemplate="subheader">
+              <div class="flex align-content-center gap-2">
+                <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
+                <span *ngIf="restaurant.totalReviews > 0" class="text-primary">({{ restaurant.averageRating }})</span>
+              </div>
+              <div class="mt-2">
             <span>
               {{ restaurant.totalReviews }} Reviews
             </span>
-            </div>
-          </ng-template>
+              </div>
+            </ng-template>
 
-          <ng-template pTemplate="footer">
-            <div
-              class="flex justify-content-between mt-1">
-              <p-button
-                label="Rate Restaurant"
-                severity="secondary"/>
-              <p-button
-                label="Check it out!"
-                class="font-bold">
-              </p-button>
-            </div>
-          </ng-template>
-        </p-card>
-      </div>
-    }
+            <ng-template pTemplate="footer">
+              <div
+                class="flex justify-content-between mt-1">
+                <p-button
+                  label="Rate Restaurant"
+                  severity="secondary"/>
+                <p-button
+                  label="Check it out!"
+                  class="font-bold">
+                </p-button>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      }
     </div>
   </p-card>
 </div>

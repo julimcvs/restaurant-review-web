@@ -4,12 +4,16 @@ import {FormBuilder, Validators} from "@angular/forms";
 import {CategoryList, CategoryService} from "../../../services/categories.service";
 import {Router} from "@angular/router";
 import {RestaurantService} from "../../../services/restaurant.service";
+import {MessageService, PrimeNGConfig} from "primeng/api";
+import {CommonModule} from "@angular/common";
+import {FileSelectEvent} from "primeng/fileupload";
 
 @Component({
   selector: 'app-new-restaurant',
   standalone: true,
   imports: [
-    SharedModule
+    SharedModule,
+    CommonModule
   ],
   templateUrl: './new-restaurant.component.html',
   styleUrl: './new-restaurant.component.scss'
@@ -32,10 +36,17 @@ export class NewRestaurantComponent implements OnInit {
   });
   categories: CategoryList[] = [];
   filteredCategories: CategoryList[] = [];
+  files: File[] = [];
+
+  totalSize: number = 0;
+
+  totalSizePercent: number = 0;
 
   constructor(private readonly restaurantService: RestaurantService,
               private readonly categoryService: CategoryService,
               private readonly formBuilder: FormBuilder,
+              private readonly config: PrimeNGConfig,
+              private readonly messageService: MessageService,
               private readonly router: Router) {
   }
 
@@ -59,10 +70,78 @@ export class NewRestaurantComponent implements OnInit {
 
   saveRestaurant() {
     this.loading = true;
-    this.restaurantService.save(this.form.value).subscribe(async () => {
-      this.form.reset();
-      await this.router.navigate(['/restaurants']);
-      this.loading = false;
+    const formData = new FormData();
+    formData.append('body', JSON.stringify(this.form.value));
+    this.files.forEach((file) => {
+      formData.append('images', file);
     });
+    this.restaurantService.save(formData).subscribe({
+      next: async () => {
+        this.form.reset();
+        await this.router.navigate(['/restaurants']);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Restaurant created successfully!',
+          life: 3000
+        });
+        this.loading = false;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to create restaurant',
+          life: 3000
+        });
+        this.loading = false;
+      }
+    });
+  }
+
+  choose(event: MouseEvent, callback: Function) {
+    callback();
+  }
+
+  onRemoveTemplatingFile(event: MouseEvent, file: File, removeFileCallback: Function, index: number) {
+    removeFileCallback(event, index);
+    this.totalSize -= parseInt(this.formatSize(file.size));
+    this.totalSizePercent = this.totalSize / 10;
+  }
+
+  onClearTemplatingUpload(clear: Function) {
+    clear();
+    this.totalSize = 0;
+    this.totalSizePercent = 0;
+  }
+
+  onTemplatedUpload() {
+    this.messageService.add({severity: 'success', summary: 'Success', detail: 'File Uploaded', life: 3000});
+  }
+
+  onSelectedFiles(event: FileSelectEvent) {
+    this.files = event.currentFiles;
+    this.files.forEach((file) => {
+      this.totalSize += parseInt(this.formatSize(file.size));
+    });
+    this.totalSizePercent = this.totalSize / 10;
+  }
+
+  uploadEvent(callback: Function) {
+    callback();
+  }
+
+  formatSize(bytes: number) {
+    const k = 1024;
+    const dm = 3;
+    const sizes = this.config.translation.fileSizeTypes || ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) {
+      return `0B`;
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+    return `${formattedSize} ${sizes[i]}`;
   }
 }

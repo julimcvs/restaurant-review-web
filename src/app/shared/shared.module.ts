@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule, NgStyle} from '@angular/common';
+import {CommonModule, NgClass, NgStyle} from '@angular/common';
 import {ButtonModule} from "primeng/button";
 import {CardModule} from "primeng/card";
 import {RatingModule} from "primeng/rating";
@@ -11,6 +11,8 @@ import {InputTextareaModule} from "primeng/inputtextarea";
 import {FieldsetModule} from "primeng/fieldset";
 import {InputMaskModule} from "primeng/inputmask";
 import {AutoCompleteModule} from "primeng/autocomplete";
+import {FileUploadModule} from "primeng/fileupload";
+import {BadgeModule} from "primeng/badge";
 
 
 @NgModule({
@@ -28,7 +30,10 @@ import {AutoCompleteModule} from "primeng/autocomplete";
     FieldsetModule,
     InputMaskModule,
     AutoCompleteModule,
-    CommonModule
+    CommonModule,
+    FileUploadModule,
+    BadgeModule,
+    NgClass,
   ],
   exports: [
     ButtonModule,
@@ -44,6 +49,10 @@ import {AutoCompleteModule} from "primeng/autocomplete";
     FieldsetModule,
     InputMaskModule,
     AutoCompleteModule,
+    FileUploadModule,
+    BadgeModule,
+    NgClass,
+
   ]
 })
 export class SharedModule {
