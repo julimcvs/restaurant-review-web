@@ -1,0 +1,12 @@
+export enum CountryEnum {
+  BRAZIL = 'BRAZIL',
+  USA = 'USA',
+  CANADA = 'CANADA',
+  ARGENTINA = 'ARGENTINA',
+  MEXICO = 'MEXICO',
+  GERMANY = 'GERMANY',
+  FRANCE = 'FRANCE',
+  ITALY = 'ITALY',
+  SPAIN = 'SPAIN',
+  PORTUGAL = 'PORTUGAL'
+}

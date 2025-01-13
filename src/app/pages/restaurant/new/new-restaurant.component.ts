@@ -7,6 +7,8 @@ import {RestaurantService} from "../../../services/restaurant.service";
 import {MessageService, PrimeNGConfig} from "primeng/api";
 import {CommonModule} from "@angular/common";
 import {FileSelectEvent} from "primeng/fileupload";
+import {StatesEnum} from "../../../shared/model/enum/states.enum";
+import {CountryEnum} from "../../../shared/model/enum/country.enum";
 
 @Component({
   selector: 'app-new-restaurant',
@@ -29,7 +31,7 @@ export class NewRestaurantComponent implements OnInit {
       city: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       neighborhood: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       number: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(5)]],
-      country: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      country: [CountryEnum.BRAZIL, [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       state: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(2)]],
       zipCode: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]],
     }),
@@ -37,6 +39,8 @@ export class NewRestaurantComponent implements OnInit {
   categories: CategoryList[] = [];
   filteredCategories: CategoryList[] = [];
   files: File[] = [];
+  states: { name: string, value: string }[] = [...StatesEnum.BRAZIL];
+  filteredStates: { name: string, value: string }[] = [];
 
   totalSize: number = 0;
 
@@ -57,7 +61,8 @@ export class NewRestaurantComponent implements OnInit {
   async getCategories() {
     this.categoryService.findAll().subscribe((categories) => {
       this.categories = categories;
-      this.filterCategory('')
+      this.filterCategory('');
+      this.filterStates('');
     });
   }
 
@@ -66,6 +71,13 @@ export class NewRestaurantComponent implements OnInit {
       this.filteredCategories = [...this.categories];
     }
     this.filteredCategories = this.categories.filter(category => category.name.toLowerCase().includes(query.toLowerCase()));
+  }
+
+  filterStates(query: string) {
+    if (!query?.trim()) {
+      this.filteredStates = [...this.states];
+    }
+    this.filteredStates = this.states.filter(state => state.name.toLowerCase().includes(query.toLowerCase()));
   }
 
   saveRestaurant() {
@@ -85,7 +97,6 @@ export class NewRestaurantComponent implements OnInit {
           detail: 'Restaurant created successfully!',
           life: 3000
         });
-        this.loading = false;
       },
       error: (err) => {
         this.messageService.add({
@@ -94,8 +105,8 @@ export class NewRestaurantComponent implements OnInit {
           detail: 'Failed to create restaurant',
           life: 3000
         });
-        this.loading = false;
-      }
+      },
+      complete: () => this.loading = false
     });
   }
 

@@ -1,22 +1,37 @@
 import {Injectable} from '@angular/core';
 import {ApiService, Page} from "./api.service";
 import {HttpParams} from "@angular/common/http";
-import {RestaurantePaginado} from "../pages/restaurant/restaurant.component";
+import {PaginatedRestaurant} from "../pages/restaurant/restaurant.component";
 
-interface SaveRestaurantDto {
-  id?: number;
-  name: string | null;
-  description: string | null;
-  categoryId: number | null;
-  address: Partial<{
-    street: string | null;
-    city: string | null;
-    neighborhood: string | null;
-    number: string | null;
-    country: string | null;
-    state: string | null;
-    zipCode: string | null;
-  }>;
+export interface RestaurantDetails {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  address: Address;
+  ratings: Rating[];
+  images: Image[];
+}
+
+interface Image {
+  filename: string;
+  url: string;
+}
+
+interface Address {
+  street: string;
+  city: string;
+  neighborhood: string;
+  number: string;
+  country: string;
+  state: string;
+  zipCode: string;
+}
+
+interface Rating {
+  id: number;
+  message: string;
+  rating: number;
 }
 
 @Injectable({
@@ -42,7 +57,11 @@ export class RestaurantService {
       .set('size', String(params.size))
       .set('sort', params.sort)
       .set('direction', params.direction);
-    return this.apiService.post<Page<RestaurantePaginado>>(`${this.endpoint}/paginated`, filter, httpParams);
+    return this.apiService.post<Page<PaginatedRestaurant>>(`${this.endpoint}/paginated`, filter, httpParams);
+  }
+
+  findById(id: number) {
+    return this.apiService.get<RestaurantDetails>(`${this.endpoint}/${id}`);
   }
 
   save(input: FormData) {

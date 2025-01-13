@@ -1,1 +1,57 @@
-<p>details works!</p>
+<div>
+  <div class="px-5">
+    <span>
+      {{ restaurant.description }}
+    </span>
+  </div>
+  <div class="flex justify-content-center mt-3">
+    <p-galleria
+      [containerStyle]="{ 'max-width': '640px' }"
+      [responsiveOptions]="responsiveOptions"
+      [showIndicatorsOnItem]="true"
+      [showIndicators]="true"
+      [showItemNavigatorsOnHover]="true"
+      [showItemNavigators]="true"
+      [showThumbnails]="false"
+      [value]="images">
+      <ng-template let-item pTemplate="item">
+        <img [src]="item.itemImageSrc" style="width: 100%;"/>
+      </ng-template>
+    </p-galleria>
+  </div>
+  <div
+    *ngIf="restaurant.ratings.length > 0"
+    class="px-5">
+    <p-dataView #dv [sortField]="sortField" [sortOrder]="sortOrder" [value]="restaurant.ratings">
+      <ng-template pTemplate="header">
+        <div class="flex flex-column md:flex-row md:justify-content-between align-content-center">
+          <div class="flex align-items-center">Comments and Ratings</div>
+          <p-dropdown (onChange)="onSortChange($event)" [(ngModel)]="sortField" [options]="sortOptions"
+                      placeholder="Sort By Ratings" styleClass="mb-2 md:mb-0"/>
+        </div>
+      </ng-template>
+      <ng-template let-ratings pTemplate="list">
+        <div class="grid grid-nogutter">
+          <div *ngFor="let item of ratings; let first = first" class="col-12" class="col-12">
+            <div [ngClass]="{ 'border-top-1 surface-border': !first }"
+                 class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3">
+              <div class="relative">
+                <i class="pi pi-user block xl:block mx-auto border-round w-full"> </i>
+              </div>
+              <div class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                  <div>
+                    <span class="font-medium text-secondary text-sm">"{{ item.message }}"</span>
+                  </div>
+                  <div>
+                    <p-rating [(ngModel)]="item.rating" [cancel]="false" [readonly]="true" class="mt-2"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-dataView>
+  </div>
+</div>

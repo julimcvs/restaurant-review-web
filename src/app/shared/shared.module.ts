@@ -13,6 +13,11 @@ import {InputMaskModule} from "primeng/inputmask";
 import {AutoCompleteModule} from "primeng/autocomplete";
 import {FileUploadModule} from "primeng/fileupload";
 import {BadgeModule} from "primeng/badge";
+import {DialogModule} from "primeng/dialog";
+import {GalleriaModule} from "primeng/galleria";
+import {DataViewModule} from "primeng/dataview";
+import {DropdownModule} from "primeng/dropdown";
+import {TagModule} from "primeng/tag";
 
 
 @NgModule({
@@ -34,6 +39,11 @@ import {BadgeModule} from "primeng/badge";
     FileUploadModule,
     BadgeModule,
     NgClass,
+    DialogModule,
+    GalleriaModule,
+    DataViewModule,
+    DropdownModule,
+    TagModule,
   ],
   exports: [
     ButtonModule,
@@ -52,7 +62,11 @@ import {BadgeModule} from "primeng/badge";
     FileUploadModule,
     BadgeModule,
     NgClass,
-
+    DialogModule,
+    GalleriaModule,
+    DataViewModule,
+    DropdownModule,
+    TagModule,
   ]
 })
 export class SharedModule {

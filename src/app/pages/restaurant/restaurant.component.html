@@ -1,4 +1,4 @@
-<div class="px-5">
+<div class="px-5 py-2 surface-100">
   <div class="p-fluid flex justify-content-between">
     <h1>
       <i class="pi pi-building" style="font-size: 1.5rem"></i>
@@ -21,13 +21,14 @@
             [header]="restaurant.name"
             [style]="{ width: '360px' }">
             <ng-template pTemplate="header">
-              <img alt="Card" [src]="restaurant.images[0].url"/>
+              <img alt="Card" [src]="restaurant.image.url"/>
             </ng-template>
 
             <ng-template pTemplate="subheader">
               <div class="flex align-content-center gap-2">
                 <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
-                <span *ngIf="restaurant.totalReviews > 0" class="text-primary">({{ restaurant.averageRating }})</span>
+                <span *ngIf="restaurant.totalReviews > 0"
+                      class="text-primary">({{ restaurant.averageRating.toFixed(2) }})</span>
               </div>
               <div class="mt-2">
             <span>
@@ -38,11 +39,9 @@
 
             <ng-template pTemplate="footer">
               <div
-                class="flex justify-content-between mt-1">
+                class="flex justify-content-center mt-1">
                 <p-button
-                  label="Rate Restaurant"
-                  severity="secondary"/>
-                <p-button
+                  (click)="restaurantDialog[restaurant.id] = true"
                   label="Check it out!"
                   class="font-bold">
                 </p-button>
@@ -50,6 +49,33 @@
             </ng-template>
           </p-card>
         </div>
+        <p-dialog
+          *ngIf="restaurantDialog[restaurant.id]"
+          [modal]="true"
+          [maximizable]="true"
+          [(visible)]="restaurantDialog[restaurant.id]"
+          [style]="{ width: '50rem' }"
+          [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+          <ng-template pTemplate="header">
+            <div class="px-5">
+              <h3>{{ restaurant.name }}</h3>
+              <div class="flex align-content-center gap-2">
+                <p-rating [(ngModel)]="restaurant.averageRating" [readonly]="true" [cancel]="false"/>
+                <span *ngIf="restaurant.totalReviews > 0"
+                      class="text-primary">({{ restaurant.averageRating.toFixed(2) }})</span>
+              </div>
+              <div class="mt-2">
+                <span>
+                  {{ restaurant.totalReviews }} Reviews
+                </span>
+              </div>
+            </div>
+          </ng-template>
+          <app-restaurant-details
+            (closeDialog)="closeDialog(restaurant.id)"
+            [restaurantId]="restaurant.id">
+          </app-restaurant-details>
+        </p-dialog>
       }
     </div>
   </p-card>
