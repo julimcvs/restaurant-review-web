@@ -3,6 +3,9 @@ import {CommonModule} from "@angular/common";
 import {SharedModule} from "../../../shared/shared.module";
 import {RestaurantDetails, RestaurantService} from "../../../services/restaurant.service";
 import {MessageService, SelectItem} from "primeng/api";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {CountryEnum} from "../../../shared/model/enum/country.enum";
+import {ReviewService} from "../../../services/review.service";
 
 @Component({
   selector: 'app-restaurant-details',
@@ -17,14 +20,18 @@ import {MessageService, SelectItem} from "primeng/api";
 export class RestaurantDetailsComponent implements OnInit {
   @Input() restaurantId!: number;
   @Output('closeDialog') closeEvent = new EventEmitter<number>();
-  restaurant!: RestaurantDetails;
-  loadingRestaurant = false;
+  form!: FormGroup;
+  hasRating = false;
   images: {
     itemImageSrc: string,
     thumbnailImageSrc: string,
     alt: string,
     title: string,
   }[] = [];
+  loadingRestaurant = false;
+  loadingRating = false;
+  rateDialog = false;
+  restaurant!: RestaurantDetails;
   responsiveOptions = [
     {
       breakpoint: '1024px',
@@ -47,11 +54,18 @@ export class RestaurantDetailsComponent implements OnInit {
   sortField!: string;
 
   constructor(private readonly restaurantService: RestaurantService,
-              private readonly messageService: MessageService) {
+              private readonly messageService: MessageService,
+              private readonly reviewService: ReviewService,
+              private readonly formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
     this.findRestaurantById();
+    this.form = this.formBuilder.group({
+      rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
+      message: ['', [Validators.minLength(3), Validators.maxLength(500)]],
+      restaurantId: [this.restaurantId, Validators.required],
+    });
   }
 
   findRestaurantById() {
@@ -90,6 +104,49 @@ export class RestaurantDetailsComponent implements OnInit {
     } else {
       this.sortOrder = 1;
       this.sortField = value;
+    }
+  }
+
+  saveRating() {
+    if (!this.form.valid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please, fill all required fields',
+        life: 3000
+      });
+      return;
+    }
+    this.loadingRating = true;
+    try {
+      this.reviewService.save(this.form.value).subscribe({
+        next: (rating: any) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Rating saved successfully!',
+            life: 3000
+          });
+          this.rateDialog = false;
+          this.restaurant.ratings.push({
+            id: rating.id,
+            message: this.form.get('message')?.value,
+            rating: this.form.get('rating')?.value
+          });
+          this.form.reset();
+          this.hasRating = true;
+        },
+        error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to save rating',
+            life: 3000
+          });
+        },
+      });
+    } finally {
+      this.loadingRating = false;
     }
   }
 }

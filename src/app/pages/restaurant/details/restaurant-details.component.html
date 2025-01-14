@@ -20,36 +20,126 @@
     </p-galleria>
   </div>
   <div
-    *ngIf="restaurant.ratings.length > 0"
     class="px-5">
-    <p-dataView #dv [sortField]="sortField" [sortOrder]="sortOrder" [value]="restaurant.ratings">
+    <p-dataView
+      #dv
+      [sortField]="sortField"
+      [sortOrder]="sortOrder"
+      [value]="restaurant.ratings">
+      <ng-template pTemplate="empty">
+        @if (!rateDialog) {
+          <div class="p-5 flex justify-content-center align-items-center">
+            <span class="text-xl text-400">No ratings yet!</span>
+          </div>
+        }
+      </ng-template>
       <ng-template pTemplate="header">
         <div class="flex flex-column md:flex-row md:justify-content-between align-content-center">
-          <div class="flex align-items-center">Comments and Ratings</div>
-          <p-dropdown (onChange)="onSortChange($event)" [(ngModel)]="sortField" [options]="sortOptions"
-                      placeholder="Sort By Ratings" styleClass="mb-2 md:mb-0"/>
+          <div class="flex align-items-center">
+            Comments and Ratings
+          </div>
+          <div>
+            <p-dropdown (onChange)="onSortChange($event)" [(ngModel)]="sortField" [options]="sortOptions"
+                        placeholder="Sort By Ratings" styleClass="mb-2 md:mb-0"/>
+            @if (hasRating) {
+              <p-button
+                severity="success"
+                class="ml-2 font-bold">
+                Thanks for rating!
+                <i class="pi pi-check ml-2"></i>
+              </p-button>
+            } @else if (!rateDialog) {
+              <p-button
+                (click)="rateDialog = true"
+                class="ml-2 font-bold">
+                Rate it!
+                <i class="pi pi-star ml-2"></i>
+              </p-button>
+            } @else {
+              <p-button
+                outlined
+                (click)="rateDialog = false"
+                class="ml-2 font-bold">
+                Cancel
+                <i class="pi pi-times ml-2"></i>
+              </p-button>
+            }
+
+          </div>
+
         </div>
       </ng-template>
       <ng-template let-ratings pTemplate="list">
         <div class="grid grid-nogutter">
-          <div *ngFor="let item of ratings; let first = first" class="col-12" class="col-12">
-            <div [ngClass]="{ 'border-top-1 surface-border': !first }"
-                 class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3">
-              <div class="relative">
-                <i class="pi pi-user block xl:block mx-auto border-round w-full"> </i>
-              </div>
-              <div class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
-                <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
-                  <div>
-                    <span class="font-medium text-secondary text-sm">"{{ item.message }}"</span>
+          @if (rateDialog) {
+            <form
+              (ngSubmit)="saveRating()"
+              [formGroup]="form">
+              <div
+                class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3">
+                <div class="relative">
+                  <i class="pi pi-user block xl:block mx-auto border-round w-full"> </i>
+                </div>
+                <div
+                  class="flex flex-column sm:flex-row sm:align-items-center gap-3">
+                  <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                    <div>
+                      <textarea
+                        cols="40"
+                        formControlName="message"
+                        placeholder="Tell us about your experience"
+                        id="message"
+                        pInputTextarea
+                        style="margin: 0; padding: 5px;">
+</textarea>
+                      <!--                        é inexplicavel mas se vc alinhar acima o textarea não funciona direito-->
+                    </div>
+                    <div>
+                      <p-rating
+                        formControlName="rating"
+                        [cancel]="false"
+                        class="mt-2"/>
+                    </div>
+                    <div>
+                      <p-button
+                        [loading]="loadingRating"
+                        type="submit"
+                        severity="primary"
+                        label="Save"
+                        class="font-bold"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <p-rating [(ngModel)]="item.rating" [cancel]="false" [readonly]="true" class="mt-2"/>
+                </div>
+              </div>
+            </form>
+          }
+          @for (item of ratings; track item.id; let first = $first) {
+            <div class="col-12">
+              <div [ngClass]="{ 'border-top-1 surface-border': !first || rateDialog }"
+                   class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3">
+                <div class="relative">
+                  <i class="pi pi-user block xl:block mx-auto border-round w-full"> </i>
+                </div>
+                <div class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                  <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                    <div>
+                      <span class="font-medium text-secondary text-sm">
+                        "{{ item.message }}"
+                      </span>
+                    </div>
+                    <div>
+                      <p-rating
+                        [(ngModel)]="item.rating"
+                        [cancel]="false"
+                        [readonly]="true"
+                        class="mt-2"/>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          }
         </div>
       </ng-template>
     </p-dataView>
