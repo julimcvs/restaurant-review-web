@@ -4,7 +4,6 @@ import {SharedModule} from "../../../shared/shared.module";
 import {RestaurantDetails, RestaurantService} from "../../../services/restaurant.service";
 import {MessageService, SelectItem} from "primeng/api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {CountryEnum} from "../../../shared/model/enum/country.enum";
 import {ReviewService} from "../../../services/review.service";
 
 @Component({
@@ -63,7 +62,7 @@ export class RestaurantDetailsComponent implements OnInit {
     this.findRestaurantById();
     this.form = this.formBuilder.group({
       rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
-      message: ['', [Validators.minLength(3), Validators.maxLength(500)]],
+      message: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(500)]],
       restaurantId: [this.restaurantId, Validators.required],
     });
   }
