@@ -9,7 +9,6 @@ export interface RestaurantDetails {
   description: string;
   category: string;
   address: Address;
-  ratings: Rating[];
   images: Image[];
 }
 
@@ -26,12 +25,6 @@ interface Address {
   country: string;
   state: string;
   zipCode: string;
-}
-
-interface Rating {
-  id: number;
-  message: string;
-  rating: number;
 }
 
 @Injectable({

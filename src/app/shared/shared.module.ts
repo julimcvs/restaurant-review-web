@@ -18,6 +18,10 @@ import {GalleriaModule} from "primeng/galleria";
 import {DataViewModule} from "primeng/dataview";
 import {DropdownModule} from "primeng/dropdown";
 import {TagModule} from "primeng/tag";
+import {ProgressSpinnerModule} from "primeng/progressspinner";
+import {ScrollerModule} from "primeng/scroller";
+import {VirtualScrollerModule} from "primeng/virtualscroller";
+import {PaginatorModule} from "primeng/paginator";
 
 
 @NgModule({
@@ -44,6 +48,9 @@ import {TagModule} from "primeng/tag";
     DataViewModule,
     DropdownModule,
     TagModule,
+    ProgressSpinnerModule,
+    VirtualScrollerModule,
+    PaginatorModule,
   ],
   exports: [
     ButtonModule,
@@ -67,6 +74,9 @@ import {TagModule} from "primeng/tag";
     DataViewModule,
     DropdownModule,
     TagModule,
+    ProgressSpinnerModule,
+    VirtualScrollerModule,
+    PaginatorModule,
   ]
 })
 export class SharedModule {

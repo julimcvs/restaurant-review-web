@@ -4,7 +4,11 @@ import {SharedModule} from "../../../shared/shared.module";
 import {RestaurantDetails, RestaurantService} from "../../../services/restaurant.service";
 import {MessageService, SelectItem} from "primeng/api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ReviewService} from "../../../services/review.service";
+import {Review, ReviewService} from "../../../services/review.service";
+import {finalize} from "rxjs";
+import {PageEvent} from "../../../shared/model/interface/page-event.interface";
+import {PaginatorState} from "primeng/paginator";
+import {DropdownChangeEvent} from "primeng/dropdown";
 
 @Component({
   selector: 'app-restaurant-details',
@@ -27,9 +31,24 @@ export class RestaurantDetailsComponent implements OnInit {
     alt: string,
     title: string,
   }[] = [];
+  first = 0;
   loadingRestaurant = false;
+  loadingReviews = false;
   loadingRating = false;
+  paginatedParams = {
+    page: 0,
+    size: 5,
+    sort: 'rating',
+    direction: 'desc',
+  };
+  paginatedInfo = {
+    size: 5,
+    number: 0,
+    totalElements: 0,
+    totalPages: 0
+  }
   rateDialog = false;
+  reviews: Review[] = [];
   restaurant!: RestaurantDetails;
   responsiveOptions = [
     {
@@ -69,7 +88,10 @@ export class RestaurantDetailsComponent implements OnInit {
 
   findRestaurantById() {
     this.loadingRestaurant = true;
-    this.restaurantService.findById(this.restaurantId).subscribe({
+    this.restaurantService.findById(this.restaurantId)
+      .pipe(
+        finalize(() => this.loadingRestaurant = false)
+      ).subscribe({
       next: (restaurant) => {
         this.restaurant = restaurant;
         this.images = restaurant.images.map(image => ({
@@ -78,32 +100,43 @@ export class RestaurantDetailsComponent implements OnInit {
           alt: image.filename,
           title: image.filename,
         }));
+        this.findReviewsByRestaurantId();
       },
-      error: (error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to fetch restaurant details',
-          life: 3000
-        });
-        this.closeEvent.emit(this.restaurantId);
-      },
-      complete: () => {
-        this.loadingRestaurant = false;
-      }
     });
   }
 
-  onSortChange(event: any) {
+  findReviewsByRestaurantId() {
+    this.loadingReviews = true;
+    this.reviewService.findByRestaurantIdPaginated(this.restaurantId, this.paginatedParams)
+      .pipe(
+        finalize(() => this.loadingReviews = false)
+      )
+      .subscribe({
+        next: (paginatedReviews) => {
+          this.reviews = paginatedReviews.content;
+          this.paginatedInfo = paginatedReviews.page;
+        }
+      });
+  }
+
+  onPageChange(event: PaginatorState) {
+    this.first = (<number>event.first);
+    this.paginatedParams.page = (<number>event.first) / (<number>event.rows);
+    this.paginatedParams.size = (<number>event.rows)
+    this.findReviewsByRestaurantId();
+  }
+
+  onSortChange(event: DropdownChangeEvent) {
     let value = event.value;
 
     if (value.indexOf('!') === 0) {
-      this.sortOrder = -1;
-      this.sortField = value.substring(1, value.length);
+      this.paginatedParams.direction = 'DESC';
+      this.paginatedParams.sort = value.substring(1, value.length);
     } else {
-      this.sortOrder = 1;
-      this.sortField = value;
+      this.paginatedParams.direction = 'ASC';
+      this.paginatedParams.sort = value;
     }
+    this.findReviewsByRestaurantId();
   }
 
   saveRating() {
@@ -117,8 +150,11 @@ export class RestaurantDetailsComponent implements OnInit {
       return;
     }
     this.loadingRating = true;
-    try {
-      this.reviewService.save(this.form.value).subscribe({
+    this.reviewService.save(this.form.value)
+      .pipe(
+        finalize(() => this.loadingRating = false),
+      )
+      .subscribe({
         next: (rating: any) => {
           this.messageService.add({
             severity: 'success',
@@ -127,7 +163,7 @@ export class RestaurantDetailsComponent implements OnInit {
             life: 3000
           });
           this.rateDialog = false;
-          this.restaurant.ratings.push({
+          this.reviews.push({
             id: rating.id,
             message: this.form.get('message')?.value,
             rating: this.form.get('rating')?.value
@@ -135,17 +171,6 @@ export class RestaurantDetailsComponent implements OnInit {
           this.form.reset();
           this.hasRating = true;
         },
-        error: (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to save rating',
-            life: 3000
-          });
-        },
       });
-    } finally {
-      this.loadingRating = false;
-    }
   }
 }
