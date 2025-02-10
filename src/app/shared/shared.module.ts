@@ -19,9 +19,10 @@ import {DataViewModule} from "primeng/dataview";
 import {DropdownModule} from "primeng/dropdown";
 import {TagModule} from "primeng/tag";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
-import {ScrollerModule} from "primeng/scroller";
 import {VirtualScrollerModule} from "primeng/virtualscroller";
 import {PaginatorModule} from "primeng/paginator";
+import {StepsModule} from "primeng/steps";
+import {SelectButtonModule} from "primeng/selectbutton";
 
 
 @NgModule({
@@ -51,6 +52,8 @@ import {PaginatorModule} from "primeng/paginator";
     ProgressSpinnerModule,
     VirtualScrollerModule,
     PaginatorModule,
+    StepsModule,
+    SelectButtonModule,
   ],
   exports: [
     ButtonModule,
@@ -77,6 +80,8 @@ import {PaginatorModule} from "primeng/paginator";
     ProgressSpinnerModule,
     VirtualScrollerModule,
     PaginatorModule,
+    StepsModule,
+    SelectButtonModule,
   ]
 })
 export class SharedModule {

@@ -27,6 +27,16 @@ interface Address {
   zipCode: string;
 }
 
+export interface RestaurantSettings {
+  availableDates: string[];
+  tableSettings: number[];
+}
+
+export interface Vacancy {
+  id: number;
+  startTime: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -45,7 +55,7 @@ export class RestaurantService {
     },
     filter: any
   ) {
-    let httpParams = new HttpParams()
+    const httpParams = new HttpParams()
       .set('page', String(params.page))
       .set('size', String(params.size))
       .set('sort', params.sort)
@@ -55,6 +65,20 @@ export class RestaurantService {
 
   findById(id: number) {
     return this.apiService.get<RestaurantDetails>(`${this.endpoint}/${id}`);
+  }
+
+  findSettingsById(id: number) {
+    return this.apiService.get<RestaurantSettings>(`${this.endpoint}/${id}/settings`);
+  }
+
+  findVacanciesById(id: number, params: {
+    tableFor: number,
+    date: string,
+  }) {
+    const httpParams = new HttpParams()
+      .set('tableFor', String(params.tableFor))
+      .set('date', params.date);
+    return this.apiService.get<Vacancy[]>(`${this.endpoint}/${id}/vacancies`, httpParams);
   }
 
   save(input: FormData) {

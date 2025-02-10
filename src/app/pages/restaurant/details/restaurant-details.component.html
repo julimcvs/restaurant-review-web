@@ -7,9 +7,17 @@
     </div>
   } @else {
     <div class="px-5">
-    <span>
-      {{ restaurant.description }}
-    </span>
+      <div class="flex justify-content-between">
+        <span>
+          {{ restaurant.description }}
+        </span>
+        <p-button
+          [routerLink]="['/restaurants/reservation', restaurant.id]"
+          class="ml-2 font-bold">
+          Make Reservation
+          <i class="pi pi-calendar ml-2"></i>
+        </p-button>
+      </div>
     </div>
     <div class="flex justify-content-center mt-3">
       <p-galleria
@@ -64,6 +72,7 @@
                 </p-button>
               } @else if (!rateDialog) {
                 <p-button
+                  severity="warning"
                   (click)="rateDialog = true"
                   class="ml-2 font-bold">
                   Rate it!
