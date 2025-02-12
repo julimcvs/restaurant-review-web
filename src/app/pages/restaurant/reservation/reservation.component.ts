@@ -4,8 +4,9 @@ import {CommonModule} from "@angular/common";
 import {FormBuilder, FormControl, Validators} from "@angular/forms";
 import {MenuItem, MessageService} from "primeng/api";
 import {ActivatedRoute, Router} from "@angular/router";
-import {RestaurantService, RestaurantSettings, Vacancy} from "../../../services/restaurant.service";
-import {finalize} from "rxjs";
+import {RestaurantConfiguration, RestaurantService} from "../../../services/restaurant.service";
+import {finalize, map} from "rxjs";
+import {ReservationService, SaveReservation} from "../../../services/reservation.service";
 
 @Component({
   selector: 'app-reservation',
@@ -18,10 +19,9 @@ import {finalize} from "rxjs";
   styleUrl: './reservation.component.scss'
 })
 export class ReservationComponent implements OnInit {
-  loading = false;
-  loadingSettings = false;
-  loadingVacancies = false;
   active = 0;
+  availableDates: Date[] = [];
+  configuration!: RestaurantConfiguration;
   items: MenuItem[] = [
     {
       label: 'Date',
@@ -34,28 +34,35 @@ export class ReservationComponent implements OnInit {
     },
   ]
   form = this.formBuilder.group({
-    date: new FormControl<string | null>(null, Validators.required),
+    date: new FormControl<Date | null>(null, Validators.required),
     tableFor: new FormControl<number | null>(null, Validators.required),
-    vacancyId: new FormControl<number | null>(null, Validators.required)
+    selectedTime: new FormControl<string | null>(null, Validators.required),
   });
+  loading = false;
+  loadingConfiguration = false;
+  loadingVacancies = false;
   restaurantId!: number;
-  settings!: RestaurantSettings;
-  vacancies!: Vacancy[];
+  vacancies!: string[];
 
   constructor(private readonly formBuilder: FormBuilder,
               private readonly route: ActivatedRoute,
               private readonly router: Router,
               private readonly messageService: MessageService,
-              private readonly restaurantService: RestaurantService
+              private readonly restaurantService: RestaurantService,
+              private readonly reservationService: ReservationService,
   ) {
   }
 
-  get date() {
+  get selectedDate() {
     return this.form.get('date');
   }
 
   get tableFor() {
     return this.form.get('tableFor');
+  }
+
+  get selectedTime() {
+    return this.form.get('selectedTime');
   }
 
   ngOnInit(): void {
@@ -68,80 +75,64 @@ export class ReservationComponent implements OnInit {
       this.router.navigate(['/restaurants']);
     }
     this.restaurantId = parseInt(this.route.snapshot.params['id']);
-    this.findRestaurantSettings(this.restaurantId);
-  }
-
-  findRestaurantSettings(restaurantId: number) {
-    this.restaurantService.findSettingsById(restaurantId)
-      .pipe(
-        finalize(() => this.loadingSettings = false)
-      )
-      .subscribe({
-        next: (settings: RestaurantSettings) => {
-          this.settings = settings;
-        }
-      })
+    this.generateAvailableDates();
+    this.findRestaurantConfiguration(this.restaurantId);
   }
 
   findVacancies() {
-    this.restaurantService.findVacanciesById(this.restaurantId, {
-      date: this.date?.getRawValue(),
-      tableFor: this.form.get('tableFor')?.getRawValue(),
-    })
+    const date = this.selectedDate?.getRawValue();
+    this.loadingVacancies = true;
+    this.restaurantService.findVacanciesById({
+      tableFor: this.tableFor?.getRawValue(),
+      date: `${date.getDate()}/${(date.getMonth() + 1).toString().padStart(2, 0)}/${date.getFullYear()}`,
+    }, this.restaurantId)
       .pipe(
-        finalize(() => this.loadingVacancies = false)
+        finalize(() => this.loadingVacancies = false),
+        map(result => result.vacancies)
       )
       .subscribe({
-        next: (vacancies: Vacancy[]) => {
+        next: (vacancies) => {
           this.vacancies = vacancies;
         }
-      })
+      });
   }
 
-  getSplitDate(date: string) {
-    return date.split('/');
-  }
-
-  getDay(date: string) {
-    return this.getSplitDate(date)[0];
-  }
-
-  getMonth(date: string) {
-    const month = this.getSplitDate(date)[1];
+  getMonth(date: Date) {
+    const month = date.getMonth();
     switch (month) {
-      case '01':
+      case 0:
         return 'Jan';
-      case '02':
+      case 1:
         return 'Feb';
-      case '03':
+      case 2:
         return 'Mar';
-      case '04':
+      case 3:
         return 'Apr';
-      case '05':
+      case 4:
         return 'May';
-      case '06':
+      case 5:
         return 'Jun';
-      case '07':
+      case 6:
         return 'Jul';
-      case '08':
+      case 7:
         return 'Aug';
-      case '09':
+      case 8:
         return 'Sep';
-      case '10':
+      case 9:
         return 'Oct';
-      case '11':
+      case 10:
         return 'Nov';
-      case '12':
+      case 11:
         return 'Dec';
       default:
-        return 'Invalid month'; // If the month is not a valid number
+        return 'Invalid month';
     }
   }
 
   next() {
     switch (this.active) {
       case 0:
-        if (!this.date?.value) {
+        if (!this.selectedDate?.value) {
           this.messageService.add({
             severity: 'error',
             summary: 'Fill all required fields',
@@ -173,14 +164,69 @@ export class ReservationComponent implements OnInit {
   }
 
   saveReservation() {
-    // TODO
+    this.loading = true;
+    const { selectedTime, date, tableFor } = this.form.getRawValue();
+
+    // Ensure we have a valid date instance
+    const scheduledDate = date ? new Date(date) : new Date();
+
+    if (selectedTime) {
+      const [hours, minutes] = selectedTime.split(":").map(Number);
+      scheduledDate.setHours(hours, minutes, 0, 0);
+    }
+
+    const body: SaveReservation = {
+      tableFor: tableFor as number,
+      restaurantId: this.restaurantId,
+      scheduledDate
+    };
+
+    this.reservationService.save(body)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Reservation saved',
+            detail: 'Reservation saved successfully.',
+          });
+          this.router.navigate(['/restaurants']);
+        }
+      });
   }
 
-  selectDate(date: string) {
-    this.date?.setValue(date);
+  selectDate(input: Date) {
+    this.selectedDate?.setValue(input);
   }
 
   selectTableFor(tableSetting: number) {
     this.tableFor?.setValue(tableSetting);
+  }
+
+  selectTime(vacancy: string) {
+    this.selectedTime?.setValue(vacancy);
+  }
+
+  private findRestaurantConfiguration(restaurantId: number) {
+    this.loadingConfiguration = true;
+    this.restaurantService.findConfigurationById(restaurantId).subscribe({
+      next: async (configuration) => {
+        if (!configuration) {
+          return;
+        }
+        this.configuration = configuration;
+      },
+      error: () => this.router.navigate(['/restaurants']),
+      complete: () => this.loadingConfiguration = false
+    })
+  }
+
+  private generateAvailableDates() {
+    const today = new Date();
+    this.availableDates = Array.from({length: 7}, (_, index) => {
+      const newDate = new Date(today);
+      newDate.setDate(today.getDate() + index);
+      return newDate;
+    });
   }
 }

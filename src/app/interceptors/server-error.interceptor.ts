@@ -1,10 +1,10 @@
 import {HttpInterceptorFn} from '@angular/common/http';
-import {Inject} from "@angular/core";
+import {inject} from "@angular/core";
 import {MessageService} from "primeng/api";
 import {catchError, throwError} from "rxjs";
 
 export const serverErrorInterceptor: HttpInterceptorFn = (req, next) => {
-  const messageService = Inject(MessageService);
+  const messageService = inject(MessageService);
 
   return next(req).pipe(
     catchError((error) => {

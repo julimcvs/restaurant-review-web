@@ -14,7 +14,7 @@
       Make a Reservation
     </h1>
   </div>
-  @if (loadingSettings) {
+  @if (loadingConfiguration) {
     <div
       class="h-30rem flex w-full justify-content-center align-items-center">
       <p-progressSpinner class="h-15rem">
@@ -22,7 +22,7 @@
     </div>
   } @else {
     <form
-      (ngSubmit)="saveReservation"
+      (ngSubmit)="saveReservation()"
       [formGroup]="form">
       <p-card
         class="shadow-2">
@@ -32,27 +32,27 @@
             <p-steps [activeIndex]="active" [model]="items"/>
             @switch (active) {
               @case (0) {
-                @if (settings) {
+                @if (configuration) {
                   <div class="text-center mt-5">
                     <span class="text-2xl">
                       Choose a date:
                     </span>
                     <div class="grid column-gap-3 p-5 flex justify-content-center text-center">
-                      @for (availableDate of settings.availableDates; track availableDate) {
+                      @for (date of availableDates; track date) {
                         <div
-                          [ngClass]="date?.value === availableDate ? 'bg-orange-500 text-white hover:bg-orange-500' : ''"
-                          (click)="selectDate(availableDate)"
+                          [ngClass]="selectedDate?.value === date ? 'bg-orange-500 text-white hover:bg-orange-500' : ''"
+                          (click)="selectDate(date)"
                           class="cursor-pointer border-1 border-orange-500 h-8rem border-round hover:bg-orange-50 align-content-center col-12 xl:col-1 lg:col-2">
                           <div class="flex-column text-center justify-content-center">
                             <div>
                               <span class="text-4xl">
-                                {{ getDay(availableDate) }}
+                                {{ date.getDate() }}
                               </span>
                             </div>
                             <br>
                             <div>
                               <span class="text-lg">
-                                {{ getMonth(availableDate) }}
+                                {{ getMonth(date) }}
                               </span>
                             </div>
                           </div>
@@ -68,15 +68,15 @@
                       How many people do you need table for?
                     </span>
                   <div class="grid column-gap-3 p-5 flex justify-content-center text-center">
-                    @for (tableSetting of settings.tableSettings; track tableSetting) {
+                    @for (tableSetting of configuration.tableSettings; track tableSetting) {
                       <div
-                        [ngClass]="tableFor?.value === tableSetting ? 'bg-orange-500 text-white hover:bg-orange-500' : ''"
-                        (click)="selectTableFor(tableSetting)"
+                        [ngClass]="tableFor?.value === tableSetting.tableFor ? 'bg-orange-500 text-white hover:bg-orange-500' : ''"
+                        (click)="selectTableFor(tableSetting.tableFor)"
                         class="cursor-pointer border-1 border-orange-500 h-8rem border-round hover:bg-orange-50 align-content-center col-12 xl:col-1 lg:col-2">
                         <div class="flex-column text-center justify-content-center">
                           <div>
                               <span class="text-4xl">
-                                {{ tableSetting }}
+                                {{ tableSetting.tableFor }}
                               </span>
                           </div>
                         </div>
@@ -86,7 +86,27 @@
                 </div>
               }
               @case (2) {
-
+                <div class="text-center mt-5">
+                    <span class="text-2xl">
+                      Schedule a time:
+                    </span>
+                  <div class="grid column-gap-3 p-5 flex justify-content-center text-center">
+                    @for (vacancy of vacancies; track vacancy) {
+                      <div
+                        [ngClass]="selectedTime?.value === vacancy ? 'bg-orange-500 text-white hover:bg-orange-500' : ''"
+                        (click)="selectTime(vacancy)"
+                        class="cursor-pointer border-1 border-orange-500 h-4rem border-round hover:bg-orange-50 align-content-center col-12 xl:col-3 lg:col-4 mt-3">
+                        <div class="flex-column text-center justify-content-center">
+                          <div>
+                              <span class="text-xl">
+                                {{ vacancy }}
+                              </span>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
               }
             }
           </div>

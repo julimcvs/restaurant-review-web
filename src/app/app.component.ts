@@ -5,7 +5,6 @@ import {HttpClientModule} from "@angular/common/http";
 import {ApiService} from "./services/api.service";
 import {CommonModule} from "@angular/common";
 import {ToastModule} from "primeng/toast";
-import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-root',
@@ -19,7 +18,6 @@ import {MessageService} from "primeng/api";
   ],
   providers: [
     ApiService,
-    MessageService
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

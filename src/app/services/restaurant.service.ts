@@ -27,14 +27,47 @@ interface Address {
   zipCode: string;
 }
 
-export interface RestaurantSettings {
-  availableDates: string[];
-  tableSettings: number[];
-}
-
 export interface Vacancy {
   id: number;
   startTime: string;
+}
+
+export interface RestaurantConfiguration {
+  vacancyInterval: number;
+  schedules: RestaurantSchedule[];
+  tableSettings: TableSetting[];
+}
+
+export interface RestaurantConfigurationForm {
+  vacancyInterval?: number | null;
+  schedules?: RestaurantScheduleForm[] | null;
+  tableSettings?: TableSettingForm[] | null
+}
+
+export interface TableSettingForm {
+  tableFor?: number | null;
+  vacancyAmount?: number | null;
+}
+
+export interface TableSetting {
+  tableFor: number;
+  vacancyAmount: number;
+}
+
+export interface RestaurantScheduleForm {
+  dayOfWeek?: number | string | null;
+  openingTime?: string | null;
+  closingTime?: string | null;
+}
+
+export interface RestaurantSchedule {
+  dayOfWeek: string;
+  openingTime: string;
+  closingTime: string;
+}
+
+interface FindVacancies {
+  vacancies: string[];
 }
 
 @Injectable({
@@ -63,25 +96,32 @@ export class RestaurantService {
     return this.apiService.post<Page<PaginatedRestaurant>>(`${this.endpoint}/paginated`, filter, httpParams);
   }
 
+  findVacanciesById(
+    params: {
+      tableFor: number,
+      date: string,
+    },
+    restaurantId: number
+  ) {
+    const httpParams = new HttpParams()
+      .set('tableFor', String(params.tableFor))
+      .set('date', params.date)
+    return this.apiService.get<FindVacancies>(`${this.endpoint}/${restaurantId}/vacancies`, httpParams);
+  }
+
   findById(id: number) {
     return this.apiService.get<RestaurantDetails>(`${this.endpoint}/${id}`);
   }
 
-  findSettingsById(id: number) {
-    return this.apiService.get<RestaurantSettings>(`${this.endpoint}/${id}/settings`);
-  }
-
-  findVacanciesById(id: number, params: {
-    tableFor: number,
-    date: string,
-  }) {
-    const httpParams = new HttpParams()
-      .set('tableFor', String(params.tableFor))
-      .set('date', params.date);
-    return this.apiService.get<Vacancy[]>(`${this.endpoint}/${id}/vacancies`, httpParams);
+  findConfigurationById(id: number) {
+    return this.apiService.get<RestaurantConfiguration>(`${this.endpoint}/${id}/configuration`);
   }
 
   save(input: FormData) {
     return this.apiService.post(`${this.endpoint}`, input);
+  }
+
+  updateConfiguration(id: number, input: RestaurantConfigurationForm) {
+    return this.apiService.put<void>(`${this.endpoint}/${id}/configuration`, input);
   }
 }

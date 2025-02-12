@@ -69,11 +69,19 @@
 
                 <ng-template pTemplate="footer">
                   <div
-                    class="flex justify-content-center mt-1">
+                    class="flex justify-content-between mt-1">
+                    <p-button
+                      severity="warning"
+                      [routerLink]="['/restaurants/configuration', restaurant.id]"
+                      class="font-bold">
+                      <i class="pi pi-cog mr-2"></i>
+                      Configure
+                    </p-button>
                     <p-button
                       (click)="restaurantDialog[restaurant.id] = true"
-                      label="Check it out!"
                       class="font-bold">
+                      Check it out!
+                      <i class="pi pi-eye ml-2"></i>
                     </p-button>
                   </div>
                 </ng-template>

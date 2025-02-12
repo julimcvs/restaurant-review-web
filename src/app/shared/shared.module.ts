@@ -23,6 +23,7 @@ import {VirtualScrollerModule} from "primeng/virtualscroller";
 import {PaginatorModule} from "primeng/paginator";
 import {StepsModule} from "primeng/steps";
 import {SelectButtonModule} from "primeng/selectbutton";
+import {InputSwitchModule} from "primeng/inputswitch";
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import {SelectButtonModule} from "primeng/selectbutton";
     PaginatorModule,
     StepsModule,
     SelectButtonModule,
+    InputSwitchModule,
   ],
   exports: [
     ButtonModule,
@@ -82,6 +84,7 @@ import {SelectButtonModule} from "primeng/selectbutton";
     PaginatorModule,
     StepsModule,
     SelectButtonModule,
+    InputSwitchModule,
   ]
 })
 export class SharedModule {

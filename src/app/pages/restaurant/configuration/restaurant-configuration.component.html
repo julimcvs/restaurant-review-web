@@ -1,0 +1,152 @@
+<div class="p-5">
+  <div class="flex align-items-center">
+    <p-button
+      [routerLink]="['/restaurants']"
+      class="bg-white"
+      outlined>
+      <i class="pi pi-arrow-left mx-2"></i>
+      Back
+    </p-button>
+  </div>
+  <div class="p-fluid flex justify-content-between">
+    <h1>
+      <i class="pi pi-cog font-bold" style="font-size: 1.5rem"></i>
+      Configure restaurant
+    </h1>
+  </div>
+  @if (loadingConfiguration) {
+    <div
+      class="h-30rem flex w-full justify-content-center align-items-center">
+      <p-progressSpinner class="h-15rem">
+      </p-progressSpinner>
+    </div>
+  } @else {
+    <form
+      (ngSubmit)="saveConfiguration()"
+      [formGroup]="form">
+      <p-card
+        class="shadow-2">
+        <ng-template
+          pTemplate="content">
+          <div class="mb-3">
+            <label
+              for="integeronly">
+              Vacancy Interval
+            </label>
+            <br>
+            <p-inputNumber
+              class="mt-2"
+              [min]="30"
+              [max]="120"
+              [showButtons]="true"
+              [step]="30"
+              pTooltip="Select the interval for generating vacancies. For example, an interval of 30 minutes will create time slots like 18:00-18:30, 18:30-19:00, and so on."
+              tooltipEvent="hover"
+              suffix=" minutes"
+              inputId="integeronly"
+              formControlName="vacancyInterval"
+              buttonLayout="horizontal"
+            />
+          </div>
+
+          <div>
+            <p-fieldset
+              formArrayName="schedules"
+              legend="Schedule">
+              <div class="flex justify-content-around">
+                @for (schedule of schedules.controls; let i = $index; track i) {
+                  <div [formGroupName]="i">
+                    <div [class.disabled-form]="schedule.disabled">
+                      <div class="text-center font-medium text-lg">
+                        <span>{{ getDayAbbreviation(schedule.value.dayOfWeek) }}</span>
+                      </div>
+
+                      <div class="py-2">
+                        <div class="custom-time-input">
+                          <input pInputText formControlName="openingTime" id="openingTime{{ i }}" type="time"/>
+                        </div>
+                      </div>
+
+                      <div class="py-2">
+                        <div class="custom-time-input">
+                          <input pInputText formControlName="closingTime" id="closingTime{{ i }}" type="time"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex justify-content-center">
+                      <p-inputSwitch
+                        [ngModelOptions]="{standalone: true}"
+                        [(ngModel)]="daysOfWeek[i]"
+                        (onChange)="toggleFormGroup(schedule, $event)"/>
+                    </div>
+
+                  </div>
+                }
+              </div>
+            </p-fieldset>
+          </div>
+          <div class="mt-3">
+            <p-fieldset
+              formArrayName="tableSettings"
+              legend="Table Settings">
+              <div class="grid gap-5 flex justify-content-start">
+                <div
+                  (click)="addTableSetting()"
+                  class="col-2 flex align-items-center justify-content-center border-round shadow-2 add-btn">
+                  <i class="pi pi-plus text-2xl"></i>
+                </div>
+                @for (tableSetting of tableSettings.controls; let i = $index; track i) {
+                  <p-card class="col-2">
+                    <div [formGroupName]="i">
+                      <div class="py-3">
+                        <p-floatLabel>
+                          <p-inputNumber
+                            required
+                            formControlName="tableFor"
+                            id="tableFor{{ i }}"
+                            type="time"/>
+                          <label for="tableFor{{ i }}">Table for</label>
+                          @if (tableSetting.get('tableFor')?.hasError("tableForNotUnique")) {
+                            <span class="text-sm text-red-500 inline-block mt-2">
+                              A table setting must be unique
+                            </span>
+                          }
+                        </p-floatLabel>
+                      </div>
+
+                      <div class="py-3">
+                        <p-floatLabel>
+                          <p-inputNumber
+                            required
+                            formControlName="vacancyAmount"
+                            id="vacancyAmount{{ i }}"
+                            type="time"/>
+                          <label for="vacancyAmount{{ i }}">Vacancy Amount</label>
+                        </p-floatLabel>
+                      </div>
+                    </div>
+                  </p-card>
+                }
+              </div>
+            </p-fieldset>
+          </div>
+        </ng-template>
+
+        <ng-template
+          pTemplate="footer">
+          <div class="w-full flex justify-content-end">
+            <p-button
+              [loading]="loading"
+              icon="pi pi-check"
+              iconPos="right"
+              label="Save"
+              severity="success"
+              type="submit">
+            </p-button>
+          </div>
+        </ng-template>
+
+      </p-card>
+    </form>
+  }
+</div>
