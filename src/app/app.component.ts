@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {ToolbarModule} from "primeng/toolbar";
 import {HttpClientModule} from "@angular/common/http";
 import {ApiService} from "./services/api.service";
@@ -23,5 +23,12 @@ import {ToastModule} from "primeng/toast";
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+
+  constructor(private readonly router: Router) {
+  }
+
+  isAuth() {
+    return this.router.url.includes("auth");
+  }
   title = 'restaurant-review-web';
 }

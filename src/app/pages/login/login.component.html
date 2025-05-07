@@ -1,1 +1,30 @@
-<p>login works!</p>
+<div
+  id="layout"
+  class="w-full h-screen flex justify-content-center align-items-center">
+  <p-card>
+    <div
+      [ngStyle]="{width: '600px'}"
+      class="p-5 flex flex-column align-items-center">
+        <img alt="Logo Restaurant Review" height="300" src="/assets/logo.png"/>
+    <input
+      class="w-full"
+      pInputText
+      placeholder="Login"
+      type="email"
+      variant="outlined">
+    <input
+      class="mt-3 w-full"
+      pInputText
+      pPassword
+      placeholder="Password"
+      type="password"
+      variant="outlined">
+    <p-button
+      class="mt-5"
+      (submit)="login"
+      [loading]="loginLoading"
+      label="Login">
+    </p-button>
+    </div>
+  </p-card>
+</div>

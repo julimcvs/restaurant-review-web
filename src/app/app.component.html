@@ -1,35 +1,42 @@
 <p-toast/>
-<div class="layout-topbar px-5">
-  <button #menubutton class="p-link layout-menu-button layout-topbar-button">
-    <i class="pi pi-bars"></i>
-  </button>
+@if (isAuth()) {
+  <div class="layout-topbar px-5">
+    <button #menubutton class="p-link layout-menu-button layout-topbar-button">
+      <i class="pi pi-bars"></i>
+    </button>
 
-  <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button">
-    <i class="pi pi-ellipsis-v"></i>
-  </button>
+    <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button">
+      <i class="pi pi-ellipsis-v"></i>
+    </button>
 
-  <a class="layout-topbar-logo">
+    <a class="layout-topbar-logo">
     <span>
       Restaurant Review
     </span>
-  </a>
-  <div #topbarmenu class="layout-topbar-menu">
-    <button class="p-link layout-topbar-button">
-      <i class="pi pi-calendar"></i>
-      <span>Calendar</span>
-    </button>
-    <button class="p-link layout-topbar-button">
-      <i class="pi pi-user"></i>
-      <span>Profile</span>
-    </button>
-    <button class="p-link layout-topbar-button">
-      <i class="pi pi-cog"></i>
-      <span>Settings</span>
-    </button>
+    </a>
+    <div #topbarmenu class="layout-topbar-menu">
+      <button class="p-link layout-topbar-button">
+        <i class="pi pi-calendar"></i>
+        <span>Calendar</span>
+      </button>
+      <button class="p-link layout-topbar-button">
+        <i class="pi pi-user"></i>
+        <span>Profile</span>
+      </button>
+      <button class="p-link layout-topbar-button">
+        <i class="pi pi-cog"></i>
+        <span>Settings</span>
+      </button>
+    </div>
   </div>
-</div>
+}
+
 <div
   class="bg-gray-100"
-  style="margin-top: 5rem; min-height: 100vh">
+  [ngStyle]="{
+      'margin-top': isAuth() ? '5rem' : '0',
+      'min-height': '100vh',
+    }"
+  >
   <router-outlet></router-outlet>
 </div>
